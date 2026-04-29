@@ -1,0 +1,6 @@
+transcripts/
+data/outcomes.json
+data/changes.json
+.env
+__pycache__/
+*.pyc

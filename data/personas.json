@@ -1,0 +1,34 @@
+[
+  {
+    "id": "persona_budget",
+    "name": "Marcus",
+    "role": "Sales Manager",
+    "company": "Northridge Supply Co.",
+    "personality": "budget-conscious, sceptical of new software costs, asks about ROI",
+    "likely_objections": ["too expensive", "we already have a system that works", "not in the budget this quarter"]
+  },
+  {
+    "id": "persona_busy",
+    "name": "Sandra",
+    "role": "Director of Sales",
+    "company": "Apex Media Ltd.",
+    "personality": "very busy, interrupts, wants bullet points, no time for a long pitch",
+    "likely_objections": ["send me an email instead", "I only have 30 seconds", "talk to my assistant"]
+  },
+  {
+    "id": "persona_interested",
+    "name": "James",
+    "role": "VP Sales",
+    "company": "GreenPath Logistics",
+    "personality": "genuinely looking for a CRM upgrade, asks specific integration questions",
+    "likely_objections": ["does it integrate with Salesforce?", "what does onboarding look like?"]
+  },
+  {
+    "id": "persona_skeptic",
+    "name": "Priya",
+    "role": "Operations Lead",
+    "company": "Bloom Retail Group",
+    "personality": "data-driven, wants proof before committing, asks for case studies",
+    "likely_objections": ["show me the numbers", "we tried something similar before and it failed", "I need to see a demo first"]
+  }
+]

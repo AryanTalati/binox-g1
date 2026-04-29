@@ -1,0 +1,46 @@
+{
+  "version": 3,
+  "updated_at": "2026-04-29T02:48:52Z",
+  "product": "CloudSuite CRM",
+  "target_persona": "SMB sales manager",
+  "stages": {
+    "greeting": {
+      "agent_line": "Hi, this is Alex from CloudSuite. I'm reaching out because companies like yours are cutting their sales admin time by up to 40% with our CRM \u2014 do you have two minutes?",
+      "goal": "establish contact and earn 2 minutes",
+      "objection_handlers": {
+        "I'm in back-to-back meetings all day / don't have time": "I totally understand \u2014 sounds like you're slammed. What if I send you a quick 90-second overview video and we can reconnect when things calm down? Does early next week or sometime in January work better for a proper conversation?",
+        "I'm heading into a meeting in 30 seconds": "No problem \u2014 I'll be quick. Can I send you a 90-second overview video and schedule 10 minutes when you're free? What does your calendar look like later this week or early next week?"
+      }
+    },
+    "discovery": {
+      "agent_line": "Great. Before I tell you about CloudSuite, can I ask \u2014 what's the one thing you wish your current CRM or system handled better for your team? That way I can focus on what's actually relevant to you.",
+      "goal": "identify current pain point and specific frustrations",
+      "objection_handlers": {
+        "We use Salesforce already": "Got it \u2014 what's working well with Salesforce, and what's been frustrating? That'll help me send you exactly what's relevant.",
+        "What does your CRM do that mine doesn't?": "Great question \u2014 before I answer that, can I ask: what's the one thing you wish your current CRM handled better for your team? That way I can focus on what's actually relevant to you instead of giving you a generic pitch.",
+        "Why don't you talk to my assistant/sales ops instead": "Happy to connect with them \u2014 they'd be the perfect person to evaluate the technical fit. One quick thing before I do: if they find something that could genuinely save your team 5-10 hours per week, would you want them to loop you in for a quick gut check, or do they usually make the call on tools like this themselves?"
+      }
+    },
+    "pitch": {
+      "agent_line": "Got it. CloudSuite is built for speed \u2014 same pipeline tracking as Salesforce but with automated follow-ups and forecasting that actually works out of the box. For example, a sales director at TechCorp cut onboarding from 3 weeks to 2 days and saw 40% less admin time in month one. Most teams are up and running in under a day versus weeks with Salesforce configs.",
+      "goal": "deliver core value proposition with concrete differentiation",
+      "objection_handlers": {
+        "We already use Salesforce / not sure what you're offering differently": "Salesforce is powerful but can be heavy. CloudSuite is built for speed: same pipeline tracking but with automated follow-ups and forecasting that work out of the box, no custom configs needed. Setup takes under a day versus weeks.",
+        "We just renewed our Salesforce contract six months ago": "I totally get that \u2014 six months in, you're committed. Here's what I'm seeing with other Salesforce teams though: they keep Salesforce for pipeline tracking but layer CloudSuite on top for the automation piece, so your investment stays protected. Would it make sense to explore whether that hybrid approach could work, or is it just bad timing altogether?"
+      }
+    },
+    "close": {
+      "agent_line": "We offer a 14-day free trial with no card required. Can I send you the setup link right now, or would early January work better for your timeline?",
+      "goal": "secure trial signup or next-step commitment",
+      "objection_handlers": {
+        "I don't have bandwidth to manage another vendor transition right now": "Totally fair \u2014 vendor transitions take energy. What if we aim for January when things settle? In the meantime, I can send you a quick overview so you have it when you're ready. Does that work?",
+        "Let's reconnect in January": "Perfect \u2014 one last quick thing: when you evaluate in January, would you be the main decision-maker or would others need to sign off? Just want to make sure I send materials that work for your process.",
+        "Talk to my assistant/sales ops about next steps": "Perfect, I'll connect with them. One quick thing before you go \u2014 if they find something that could genuinely save your team 5-10 hours per week, would you want them to loop you in, or would you prefer they just make the call on tools like this themselves?"
+      }
+    }
+  },
+  "improvement_notes": [
+    "v1\u2192v2 (2026-04-29): Enhanced discovery stage to probe deeper on existing tool frustrations, especially for Salesforce users. Strengthened pitch with concrete TechCorp case study showing 3-week to 2-day onboarding improvement. Added objection handlers across all stages based on call data: timing/bandwidth constraints, Salesforce differentiation, and decision-maker qualification. Close now offers flexible timing (January option) to respect prospect constraints per key insight.",
+    "v2\u2192v3 (2026-04-29): Critical fix to discovery stage weakness (100% weak rate). Rewrote agent_line to lead with discovery question BEFORE pitching, flipping the script from tell-first to ask-first. Added three high-impact objection handlers: 30-second meeting time constraint (greeting), 'what does your CRM do' redirect to discovery (discovery), and gatekeeper referral with executive buy-in question (discovery + close). Added Salesforce contract renewal handler to pitch stage with hybrid deployment pattern interrupt. Changes address key insight: agent was securing referrals but sacrificing discovery depth and executive access."
+  ]
+}

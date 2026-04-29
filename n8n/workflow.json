@@ -1,0 +1,151 @@
+{
+  "name": "Binox G1 — Self-Improving Call Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "run-cycle",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "binox-g1-trigger",
+      "notes": "POST /webhook/run-cycle to start a full iteration. Optional body: {\"persona_id\": \"persona_budget\", \"improve\": true}"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract parameters from webhook body\nconst body = $input.first().json.body || {};\nconst personaId = body.persona_id || null;\nconst shouldImprove = body.improve !== false;\n\nreturn [\n  {\n    json: {\n      persona_id: personaId,\n      should_improve: shouldImprove,\n      started_at: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "id": "parse-params",
+      "name": "Parse Parameters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "command": "cd /path/to/binox-g1 && python run_call.py {{ $json.persona_id || '' }} 2>&1",
+        "options": {}
+      },
+      "id": "loop1-call",
+      "name": "Loop 1 — Run Call",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "notes": "Runs run_call.py. Update the path to match your deployment."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract the call_id printed by run_call.py\nconst stdout = $input.first().json.stdout || '';\nconst match = stdout.match(/CALL_ID:([\\w_]+)/);\nif (!match) throw new Error('Could not find CALL_ID in output: ' + stdout);\nconst callId = match[1];\nconsole.log('Extracted call_id:', callId);\nreturn [{ json: { call_id: callId, call_output: stdout } }];"
+      },
+      "id": "extract-call-id",
+      "name": "Extract Call ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "command": "cd /path/to/binox-g1 && python analyze_call.py {{ $json.call_id }} 2>&1",
+        "options": {}
+      },
+      "id": "loop2-analyze",
+      "name": "Loop 2 — Analyze Call",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "notes": "Runs analyze_call.py with the call_id from Loop 1."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "leftValue": "", "caseSensitive": true },
+          "conditions": [
+            {
+              "id": "check-improve",
+              "leftValue": "={{ $('Parse Parameters').item.json.should_improve }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equal" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "should-improve",
+      "name": "Should Improve?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "command": "cd /path/to/binox-g1 && python improve_script.py 1 2>&1",
+        "options": {}
+      },
+      "id": "loop3-improve",
+      "name": "Loop 3 — Improve Script",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1560, 200],
+      "notes": "Runs improve_script.py. Only executes if should_improve=true."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge outputs and build response summary\nconst callOutput = $('Loop 1 — Run Call').first().json.stdout || '';\nconst analyzeOutput = $('Loop 2 — Analyze Call').first().json.stdout || '';\nconst improveOutput = $input.first().json.stdout || 'Improvement skipped';\n\nconst scoreMatch = analyzeOutput.match(/Score: (\\d+)/);\nconst outcomeMatch = analyzeOutput.match(/Outcome: ([\\w_]+)/);\nconst insightMatch = analyzeOutput.match(/Key insight: (.+)/);\nconst callIdMatch = callOutput.match(/CALL_ID:([\\w_]+)/);\n\nreturn [{\n  json: {\n    status: 'complete',\n    call_id: callIdMatch ? callIdMatch[1] : 'unknown',\n    score: scoreMatch ? parseInt(scoreMatch[1]) : null,\n    outcome: outcomeMatch ? outcomeMatch[1] : 'unknown',\n    key_insight: insightMatch ? insightMatch[1].trim() : null,\n    improved: true,\n    completed_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "build-response-improved",
+      "name": "Build Response (improved)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const callOutput = $('Loop 1 — Run Call').first().json.stdout || '';\nconst analyzeOutput = $('Loop 2 — Analyze Call').first().json.stdout || '';\nconst scoreMatch = analyzeOutput.match(/Score: (\\d+)/);\nconst outcomeMatch = analyzeOutput.match(/Outcome: ([\\w_]+)/);\nconst insightMatch = analyzeOutput.match(/Key insight: (.+)/);\nconst callIdMatch = callOutput.match(/CALL_ID:([\\w_]+)/);\nreturn [{\n  json: {\n    status: 'complete',\n    call_id: callIdMatch ? callIdMatch[1] : 'unknown',\n    score: scoreMatch ? parseInt(scoreMatch[1]) : null,\n    outcome: outcomeMatch ? outcomeMatch[1] : 'unknown',\n    key_insight: insightMatch ? insightMatch[1].trim() : null,\n    improved: false,\n    completed_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "build-response-no-improve",
+      "name": "Build Response (no improve)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 400]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": { "main": [[{ "node": "Parse Parameters", "type": "main", "index": 0 }]] },
+    "Parse Parameters": { "main": [[{ "node": "Loop 1 — Run Call", "type": "main", "index": 0 }]] },
+    "Loop 1 — Run Call": { "main": [[{ "node": "Extract Call ID", "type": "main", "index": 0 }]] },
+    "Extract Call ID": { "main": [[{ "node": "Loop 2 — Analyze Call", "type": "main", "index": 0 }]] },
+    "Loop 2 — Analyze Call": { "main": [[{ "node": "Should Improve?", "type": "main", "index": 0 }]] },
+    "Should Improve?": {
+      "main": [
+        [{ "node": "Loop 3 — Improve Script", "type": "main", "index": 0 }],
+        [{ "node": "Build Response (no improve)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Loop 3 — Improve Script": { "main": [[{ "node": "Build Response (improved)", "type": "main", "index": 0 }]] },
+    "Build Response (improved)": { "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]] },
+    "Build Response (no improve)": { "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": { "templateCredsSetupCompleted": true },
+  "_meta": {
+    "readme": "Import this file into n8n via Settings > Import Workflow. Update the path in each Execute Command node to point to your binox-g1 directory. Set ANTHROPIC_API_KEY in n8n's environment variables or prefix each command with 'ANTHROPIC_API_KEY=sk-... '."
+  }
+}
