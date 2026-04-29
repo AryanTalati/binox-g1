@@ -29,7 +29,7 @@ n8n Orchestrator (webhook trigger)
 
 See `architecture_diagram.svg` (or the diagram in the README preview) for the visual flow.
 
-![n8n Workflow](n8n workflow.png)
+![n8n Workflow](n8n%20workflow.png)
 ---
 
 ## Quick Start
